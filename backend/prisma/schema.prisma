@@ -1,0 +1,221 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  role      Role     @default(STUDENT)
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student Student?
+  teacher Teacher?
+}
+
+model Student {
+  id          Int      @id @default(autoincrement())
+  firstName   String
+  middleName  String
+  lastName    String
+  dateOfBirth DateTime
+  gender      Gender   @default(OTHER)
+  email       String   @unique
+  phoneNumber String
+  address     String
+  city        String
+  image       String?
+  userId      Int      @unique
+  user        User     @relation(fields: [userId], references: [id])
+
+  classId     Int?
+  class       Class?       @relation(fields: [classId], references: [id])
+  grades      Grade[]
+  enrollments Enrollment[]
+  attendances Attendance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Teacher {
+  id                Int       @id @default(autoincrement())
+  firstName         String
+  middleName        String
+  lastName          String
+  dateOfBirth       DateTime?
+  gender            Gender    @default(OTHER)
+  email             String    @unique
+  phone             String?
+  image             String?   @default("default-image.jpg")
+  bio               String?
+  yearsOfExperience Int       @default(0)
+  userId            Int       @unique
+  user              User      @relation(fields: [userId], references: [id])
+
+  subjects Subject[]
+  classes  ClassTeacher[] // Many-to-many relation
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Subject {
+  id               Int               @id @default(autoincrement())
+  name             String            @unique
+  description      String?
+  teacherId        Int?
+  teacher          Teacher?          @relation(fields: [teacherId], references: [id])
+  grades           Grade[]
+  enrollments      Enrollment[]
+  schedules        Schedule[]
+  semesterSubjects SemesterSubject[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  classId   Int?
+  class     Class?   @relation(fields: [classId], references: [id])
+}
+
+model Class {
+  id              Int             @id @default(autoincrement())
+  name            String
+  level           Int
+  description     String
+  subjects        Subject[]
+  students        Student[]
+  schedules       Schedule[]
+  attendances     Attendance[]
+  semesterClasses SemesterClass[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ClassTeacher ClassTeacher[]
+}
+
+model ClassTeacher {
+  classId   Int
+  class     Class   @relation(fields: [classId], references: [id])
+  teacherId Int
+  teacher   Teacher @relation(fields: [teacherId], references: [id])
+
+  @@id([classId, teacherId])
+}
+
+model Grade {
+  id         Int      @id @default(autoincrement())
+  value      Int
+  studentId  Int
+  student    Student  @relation(fields: [studentId], references: [id])
+  subjectId  Int
+  subject    Subject  @relation(fields: [subjectId], references: [id])
+  semesterId Int
+  semester   Semester @relation(fields: [semesterId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Enrollment {
+  id         Int      @id @default(autoincrement())
+  studentId  Int
+  student    Student  @relation(fields: [studentId], references: [id])
+  subjectId  Int
+  subject    Subject  @relation(fields: [subjectId], references: [id])
+  semesterId Int
+  semester   Semester @relation(fields: [semesterId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Attendance {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  student   Student  @relation(fields: [studentId], references: [id])
+  classId   Int
+  class     Class    @relation(fields: [classId], references: [id])
+  date      DateTime
+  status    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Schedule {
+  id         Int      @id @default(autoincrement())
+  dayOfWeek  String
+  startTime  DateTime
+  endTime    DateTime
+  classId    Int
+  class      Class    @relation(fields: [classId], references: [id])
+  subjectId  Int
+  subject    Subject  @relation(fields: [subjectId], references: [id])
+  semesterId Int
+  semester   Semester @relation(fields: [semesterId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Semester {
+  id               Int               @id @default(autoincrement())
+  term             Int
+  year             Int
+  startDate        DateTime
+  endDate          DateTime
+  grades           Grade[]
+  enrollments      Enrollment[]
+  schedules        Schedule[]
+  semesterClasses  SemesterClass[] // Explicit many-to-many relation
+  semesterSubjects SemesterSubject[] // Explicit many-to-many relation
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @default(now())
+
+  @@unique([term, year])
+}
+
+model SemesterClass {
+  semesterId Int
+  semester   Semester @relation(fields: [semesterId], references: [id])
+  classId    Int
+  class      Class    @relation(fields: [classId], references: [id])
+
+  @@id([semesterId, classId])
+}
+
+model SemesterSubject {
+  semesterId Int
+  semester   Semester @relation(fields: [semesterId], references: [id])
+  subjectId  Int
+  subject    Subject  @relation(fields: [subjectId], references: [id])
+
+  @@id([semesterId, subjectId])
+}
+
+model GraduatedStudents {
+  studentId   Int      @id
+  graduatedAt DateTime @default(now())
+}

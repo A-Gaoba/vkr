@@ -1,0 +1,45 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:server": "ts-node server/index.ts",
+    "start": "nodemon server/index.ts",
+    "build": "tsc",
+    "seed": "ts-node scripts/seedClasses.ts",
+    "seedSubjects": "ts-node scripts/seedSubjects.ts",
+    "seedClassesAndSubjects": "ts-node scripts/seedClassesAndSubjects.ts",
+    "delete": "ts-node scripts/deleteAllSeedData.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.12.12",
+    "@types/nodemailer": "^6.4.14",
+    "nodemon": "^3.0.2",
+    "npm-run-all": "^4.1.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "@prisma/client": "^5.14.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "faker": "^6.6.6",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.8",
+    "prisma": "^5.7.1",
+    "zod": "^3.22.4"
+  }
+}

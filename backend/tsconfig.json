@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES6",                          // Specify ECMAScript target version
+    "module": "commonjs",                     // Specify module code generation
+    "outDir": "./dist",                       // Redirect output structure to the directory
+    "rootDir": "./server",                       // Specify the root directory of input files
+    "strict": false,                           // Enable all strict type-checking options
+    "esModuleInterop": true,                  // Enables emit interoperability between CommonJS and ES Modules
+    "skipLibCheck": true,                     // Skip type checking of all declaration files (*.d.ts)
+    "forceConsistentCasingInFileNames": true  // Disallow inconsistently-cased references to the same file
+  },
+  "include": ["server", "dist/dist"],                         // Specify an array of filenames or patterns to include in the program
+  "exclude": ["node_modules"]                 // Specify an array of filenames or patterns to exclude in the program
+}

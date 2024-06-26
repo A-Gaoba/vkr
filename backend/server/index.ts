@@ -24,7 +24,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.static(path.join(__dirname, "dist")));
+app.use(express.static(path.join(__dirname, "..", "..", "frontend", "dist")));
 
 app.use(cors());
 app.use(express.json());
@@ -45,7 +45,9 @@ app.use("/assign-teachers", assignmentsRouter);
 app.use("/graduated-students", graduateStudent);
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
+  res.sendFile(
+    path.join(__dirname, "..", "..", "frontend", "dist", "index.html")
+  );
 });
 
 app.listen(PORT, () => {
